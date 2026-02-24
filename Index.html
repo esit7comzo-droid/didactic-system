@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FCM 토큰 확인</title>
+  <style>
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>FCM 토큰 확인</h2>
+
+<button onclick="getFCMToken()">토큰 받기</button>
+
+<textarea id="tokenBox" placeholder="여기에 토큰이 표시됨" readonly></textarea>
+<br>
+<button onclick="copyToken()">토큰 복사</button>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7QNAEKiIgXM_eTzlG6OkWeoQ2k2nOvV4",
+    authDomain: "eps-chat-e7acf.firebaseapp.com",
+    projectId: "eps-chat-e7acf",
+    storageBucket: "eps-chat-e7acf.firebasestorage.app",
+    messagingSenderId: "704961712537",
+    appId: "1:704961712537:web:2effa3a4a3ec33b3660308"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  window.getFCMToken = async function() {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        alert("알림 허용 필요");
+        return;
+      }
+
+      const token = await getToken(messaging, {
+        vapidKey: "BCQ1JkHhcCD8UEKhohp0IBvY4EENMctKw8ttEBjiKfxhcMYsAnt-KV74p2tSK42lyyH9hq343CpN8CEBPN2xBD4"
+      });
+
+      if (token) {
+        document.getElementById("tokenBox").value = token;
+      } else {
+        alert("토큰 못 받음");
+      }
+    } catch (err) {
+      alert("에러 발생");
+      console.error(err);
+    }
+  }
+
+  window.copyToken = function() {
+    const box = document.getElementById("tokenBox");
+    box.select();
+    document.execCommand("copy");
+    alert("복사 완료");
+  }
+</script>
+
+</body>
+</html>
